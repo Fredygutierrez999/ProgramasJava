@@ -1,0 +1,17 @@
+programa suerte.pro
+var entero a,b,ciclo,i;
+var real c;
+escribirln "Diguite valor de a: ";
+leer a;
+escribirln "Diguite valor de b: ";
+leer b;
+set c=(a+b);
+escribirln "El resultado es: ",c;
+si c<<10
+	escribirln "menor a 10, valor:",c,"--Fin";
+sino
+	escribirln "mayor o igual a 10, valor:",c,"--Fin";
+finsi
+repetir i=0:i<=10:1
+	escribirln i,"-Iterador";
+finrepetir

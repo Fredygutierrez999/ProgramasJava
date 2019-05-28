@@ -5,8 +5,9 @@ import java.util.*;
 import javax.swing.JList;
 
 /**
- * Clase utilizada para compilar listado de string con el código fuente.
- * Esta clase se ejecuta por medio de un Thread
+ * Clase utilizada para compilar listado de string con el código fuente. Esta
+ * clase se ejecuta por medio de un Thread
+ *
  * @author fredy Gamer
  */
 public class compilador extends Thread {
@@ -437,7 +438,6 @@ public class compilador extends Thread {
         }
     }
 
-    
     private final String _ConstOperadores = ",+,-,*,/,^,&&,||,<<,>>,<=,==,<>,>=,(,),";
     private final String _ConstLetras = "abcdefghijklmnñopqrstuvwxyz";
     private final String _ConstNumeros = "1234567890";
@@ -452,9 +452,21 @@ public class compilador extends Thread {
     private final fmrCompilador _hiloPrincipal;
     private listaCapturaDato _CapturaDatos;
     private listaCapturaDato xLineaConsola;
+    private boolean _soloValida;
+
+    /**
+     * Marca la bandera solo valida para que el compilador muestre los errores
+     * previos
+     *
+     * @param xvalida
+     */
+    public void setSoloValidar(boolean xvalida) {
+        this._soloValida = xvalida;
+    }
 
     /**
      * Cambia listado de pasos del compilador
+     *
      * @param _PasosCompilador
      */
     public void setPasosCompilador(List<String> _PasosCompilador) {
@@ -463,6 +475,7 @@ public class compilador extends Thread {
 
     /**
      * Captura datos del usuario, genera un wait miestras se cargan los datos
+     *
      * @param xCapturaDatos
      */
     public void setCapturaDatos(listaCapturaDato xCapturaDatos) {
@@ -471,8 +484,10 @@ public class compilador extends Thread {
 
     /**
      * Constructor
+     *
      * @param xhiloPrincipal Recibe objeto de tipo fmrCompilador
-     * @param xLineaConsola Objeto utilizado para capturar datos de línea de consola
+     * @param xLineaConsola Objeto utilizado para capturar datos de línea de
+     * consola
      */
     public compilador(fmrCompilador xhiloPrincipal, listaCapturaDato xLineaConsola) {
         this._hiloPrincipal = xhiloPrincipal;
@@ -496,6 +511,7 @@ public class compilador extends Thread {
 
     /**
      * Carga listado de cadena de mensajes a mostrar
+     *
      * @param xCadena String con cadena a mostrar
      * @return
      */
@@ -536,6 +552,7 @@ public class compilador extends Thread {
 
     /**
      * Agrega datos a consola
+     *
      * @param xLinea
      */
     private void AgregarConsola(String xLinea) {
@@ -577,7 +594,7 @@ public class compilador extends Thread {
         for (String lstCadena : lstCadenas) {
             if (!"".equals(lstCadena.trim())) {
 
-                String[] arrIntrucciones = lstCadena.trim().toLowerCase().replace(";", "").replace("\t", " ").replace("  "," ").replace("  "," ").replace("  "," ").split(" ");
+                String[] arrIntrucciones = lstCadena.trim().toLowerCase().replace(";", "").replace("\t", " ").replace("  ", " ").replace("  ", " ").replace("  ", " ").split(" ");
                 pasos objTemporal = new pasos();
                 objTemporal.setLinea(xLinea);
                 switch (arrIntrucciones[0]) {
@@ -671,15 +688,22 @@ public class compilador extends Thread {
                         break;
                     case "finrepetir":
                         try {
+                            boolean existePadre = false;
                             for (int i = this._ListPasosCompilado.size() - 1; i >= 0; i--) {
                                 if ("repetir".equals(this._ListPasosCompilado.get(i).primerPalabraReservada()) && this._ListPasosCompilado.get(i).getAsignado() == false) {
                                     this._ListPasosCompilado.get(i).setAsignado(true);
                                     this._ListPasosCompilado.get(i).setEspecialFinal(xLinea);
                                     objTemporal.setEspecialInicial(i);
                                     i = 0;
+                                    existePadre = true;
                                 }
                             }
-                            objTemporal.agregaPalabraReservada(arrIntrucciones[0]);
+
+                            if (existePadre) {
+                                objTemporal.agregaPalabraReservada(arrIntrucciones[0]);
+                            } else {
+                                AgregarConsolaError("Error en línea " + Integer.toString(xLinea) + ", finrepetir no posee el inicio 'repetir'.");
+                            }
                         } catch (Exception ex) {
                             AgregarConsolaError("Error en línea " + Integer.toString(xLinea) + ", valide.");
                         }
@@ -694,33 +718,47 @@ public class compilador extends Thread {
                         break;
                     case "sino":
                         try {
+                            boolean existePadreSiNo = false;
                             for (int i = this._ListPasosCompilado.size() - 1; i >= 0; i--) {
                                 if ("si".equals(this._ListPasosCompilado.get(i).primerPalabraReservada()) && this._ListPasosCompilado.get(i).getAsignado() == false) {
                                     this._ListPasosCompilado.get(i).setAsignado(true);
                                     this._ListPasosCompilado.get(i).setEspecialFinal(xLinea);
                                     i = 0;
+                                    existePadreSiNo = true;
                                 }
                             }
-                            objTemporal.agregaPalabraReservada(arrIntrucciones[0]);
+                            if (existePadreSiNo) {
+                                objTemporal.agregaPalabraReservada(arrIntrucciones[0]);
+
+                            } else {
+                                AgregarConsolaError("Error en línea " + Integer.toString(xLinea) + ", sino sin primer palabra 'si'.");
+                            }
                         } catch (Exception ex) {
                             AgregarConsolaError("Error en línea " + Integer.toString(xLinea) + ", valide.");
                         }
                         break;
                     case "finsi":
                         try {
+                            boolean existePadreFinsi = false;
                             for (int i = this._ListPasosCompilado.size() - 1; i >= 0; i--) {
                                 if ("sino".equals(this._ListPasosCompilado.get(i).primerPalabraReservada()) && this._ListPasosCompilado.get(i).getAsignado() == false) {
                                     this._ListPasosCompilado.get(i).setAsignado(true);
                                     this._ListPasosCompilado.get(i).setEspecialFinal(xLinea);
                                     i = 0;
+                                    existePadreFinsi = true;
                                 }
                                 if ("si".equals(this._ListPasosCompilado.get(i).primerPalabraReservada()) && this._ListPasosCompilado.get(i).getAsignado() == false) {
                                     this._ListPasosCompilado.get(i).setAsignado(true);
                                     this._ListPasosCompilado.get(i).setEspecialFinal(xLinea);
                                     i = 0;
+                                    existePadreFinsi = true;
                                 }
                             }
-                            objTemporal.agregaPalabraReservada(arrIntrucciones[0]);
+                            if (existePadreFinsi) {
+                                objTemporal.agregaPalabraReservada(arrIntrucciones[0]);
+                            } else {
+                                AgregarConsolaError("Error en línea " + Integer.toString(xLinea) + ", finsi sin inicio 'si o sino'.");
+                            }
                         } catch (Exception ex) {
                             AgregarConsolaError("Error en línea " + Integer.toString(xLinea) + ", valide.");
                         }
@@ -744,7 +782,23 @@ public class compilador extends Thread {
 
             }
         }
-        objProceso.setresultado(objProceso.getMensajes().isEmpty());
+
+        if (this._ModelLogErrores.getSize() == 0) {
+            //El programa debe inicial por la palabra reservada programa
+            if (!"programa".equals(this._ListPasosCompilado.get(0).primerPalabraReservada())) {
+                AgregarConsolaError("El programa debe inicial con la palabra 'Programa'.");
+            }
+
+            //valida que todos los ciclos posean un inicio y fin
+            for (int i = 0; i < this._ListPasosCompilado.size(); i++) {
+                if ("repetir".equals(this._ListPasosCompilado.get(i).primerPalabraReservada())
+                        && this._ListPasosCompilado.get(i).getAsignado() == false) {
+                    AgregarConsolaError("Error en la lìnea " + Integer.toString(i) + ", el ciclo repetir no posee un fin");
+                }
+            }
+        }
+
+        objProceso.setresultado(this._ModelLogErrores.getSize() == 0);
         return objProceso;
     }
 
@@ -1097,7 +1151,6 @@ public class compilador extends Thread {
         return objItem;
     }
 
-    
     /**
      * Valida si el objeto variable es numero
      *
@@ -1138,11 +1191,11 @@ public class compilador extends Thread {
         return ("real".equals(obj.getTipoDato()));
     }
 
-   
-    
     /**
      * Genera una evaluación del arbol de operaciones y calcula un nodo final
-     * con el resultado, este metodo se utiliza en intrucciones como if, while y set
+     * con el resultado, este metodo se utiliza en intrucciones como if, while y
+     * set
+     *
      * @param xCabeza
      * @return
      */
@@ -1291,9 +1344,6 @@ public class compilador extends Thread {
         }
     }
 
-    
-    
-    
     /**
      * Evento principal encargado de realizar la compilación de las lineas
      */
@@ -1302,9 +1352,15 @@ public class compilador extends Thread {
         respuestaProceso objProceso;
         objProceso = cargarLinearACompilar(this._ListPasosCompilador);
         if (objProceso.getresultado() && this._ModelLogErrores.getSize() == 0) {
-            compilar();
+            if (!this._soloValida) {
+                compilar();
+            }
         }
-        AgregarConsola("**************************FIN**************************");
+        if (!this._soloValida) {
+            AgregarConsola("**************************FIN**************************");
+        } else {
+            AgregarConsola("**COMPILACIÓN EXITOSA**");
+        }
         this._hiloPrincipal.habilitarCompilador(true);
     }
 

@@ -6,6 +6,8 @@
 package compiladorffl;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -14,13 +16,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import javax.swing.JFileChooser;
+import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
 
 /**
  *
  * @author fredyalejandrogutierrezvelasquez
  */
-public class fmrCompilador extends javax.swing.JFrame {
+public final class fmrCompilador extends javax.swing.JFrame {
 
     listaCapturaDato xLineaConsola;
 
@@ -29,8 +32,45 @@ public class fmrCompilador extends javax.swing.JFrame {
      */
     public fmrCompilador() {
         initComponents();
-        cargarTxt("/Users/fredyalejandrogutierrezvelasquez/Downloads/CompiladorFFL/Programa.txt");
+
+        cargarTxt("/Users/fredyalejandrogutierrezvelasquez/Documents/ProgramasJava/CompiladorFFL/Programa.txt");
         this.xLineaConsola = new listaCapturaDato();
+
+        ///ABRIR ARCHIVO
+        JMenuItem menuAbrir = new JMenuItem("Abrir");
+        menuAbrir.addActionListener((ActionEvent e) -> {
+            cargarDatos();
+        });
+        jMenu3.add(menuAbrir);
+
+        ///GUARDAR ARCHIVO
+        JMenuItem menuGuardar = new JMenuItem("Guardar");
+        menuGuardar.addActionListener((ActionEvent e) -> {
+            guardarDatos();
+        });
+        jMenu3.add(menuGuardar);
+
+        ///COPIAR TEXTO
+        JMenuItem menuCopiar = new JMenuItem("Copiar");
+        menuCopiar.addActionListener((ActionEvent e) -> {
+            this.txtCodigoFuente.copy();
+        });
+        jMenu5.add(menuCopiar);
+
+        ///CORTAR TEXTO
+        JMenuItem menuCortar = new JMenuItem("Cortar");
+        menuCortar.addActionListener((ActionEvent e) -> {
+            this.txtCodigoFuente.cut();
+        });
+        jMenu5.add(menuCortar);
+
+        ///PEGAR TEXTO
+        JMenuItem menuPegar = new JMenuItem("Pegar");
+        menuPegar.addActionListener((ActionEvent e) -> {
+            this.txtCodigoFuente.paste();
+        });
+        jMenu5.add(menuPegar);
+
     }
 
     /**
@@ -61,7 +101,6 @@ public class fmrCompilador extends javax.swing.JFrame {
         txtErrores = new javax.swing.JTextArea();
         jMenuBar2 = new javax.swing.JMenuBar();
         jMenu3 = new javax.swing.JMenu();
-        jMenu4 = new javax.swing.JMenu();
         jMenu5 = new javax.swing.JMenu();
         jMenu6 = new javax.swing.JMenu();
         jMenu7 = new javax.swing.JMenu();
@@ -121,29 +160,21 @@ public class fmrCompilador extends javax.swing.JFrame {
         txtErrores.setRows(5);
         jScrollPane3.setViewportView(txtErrores);
 
-        jMenu3.setText("Abrir");
-        jMenu3.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jMenu3MouseClicked(evt);
-            }
-        });
+        jMenu3.setLabel("Archivo");
         jMenuBar2.add(jMenu3);
 
-        jMenu4.setText("Guardar");
-        jMenu4.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                jMenu4MouseClicked(evt);
-            }
-        });
-        jMenuBar2.add(jMenu4);
-
-        jMenu5.setText("Atras");
+        jMenu5.setLabel("Editar");
         jMenuBar2.add(jMenu5);
 
         jMenu6.setText("Adelante");
         jMenuBar2.add(jMenu6);
 
         jMenu7.setText("Validar");
+        jMenu7.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenu7MouseClicked(evt);
+            }
+        });
         jMenuBar2.add(jMenu7);
 
         jMenu8.setText("Compilar");
@@ -158,6 +189,11 @@ public class fmrCompilador extends javax.swing.JFrame {
         jMenuBar2.add(jMenu9);
 
         jMenu10.setText("Quienes somos");
+        jMenu10.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                jMenu10MouseClicked(evt);
+            }
+        });
         jMenuBar2.add(jMenu10);
 
         setJMenuBar(jMenuBar2);
@@ -223,28 +259,22 @@ public class fmrCompilador extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     /**
-     * Metodo encargado de cargar archivo txt
-     * @param evt 
+     * Copia texto de textbox al clipboard
+     *
+     * @param evt
      */
-    private void jMenu3MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu3MouseClicked
-        cargarDatos();
-    }//GEN-LAST:event_jMenu3MouseClicked
-
-    /**
-     * Metodo encargado de guardar cambios en archivo txt
-     * @param evt 
-     */
-    private void jMenu4MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu4MouseClicked
-        guardarDatos();
-    }//GEN-LAST:event_jMenu4MouseClicked
+    private void copiarTexto(java.awt.event.MouseEvent evt) {
+        this.txtCodigoFuente.copy();
+    }
 
     /**
      * Metodo utilizado para iniciar analizado de programa
-     * @param evt 
+     *
+     * @param evt
      */
     private void jMenu8MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu8MouseClicked
         this.jMenu8.setEnabled(false);
-        analizar();
+        compilar(false);
     }//GEN-LAST:event_jMenu8MouseClicked
 
     private void jButton1MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jButton1MouseClicked
@@ -258,7 +288,8 @@ public class fmrCompilador extends javax.swing.JFrame {
 
     /**
      * Metodo utilizado para cargar datos del textbox a hilo de la consola
-     * @param evt 
+     *
+     * @param evt
      */
     private void txtDatoConsolaKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_txtDatoConsolaKeyPressed
         if (evt.getKeyCode() == 10) {
@@ -272,37 +303,58 @@ public class fmrCompilador extends javax.swing.JFrame {
     }//GEN-LAST:event_txtDatoConsolaKeyPressed
 
     /**
+     * Metodo utilizado para mostrar datos del compilador
+     *
+     * @param evt
+     */
+    private void jMenu10MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu10MouseClicked
+        JOptionPane.showMessageDialog(null, "UNIVERSIDAD CENTRAL\n Estudiantes: \nFredy Gutierrez \nFredy Guacaneme \nLeonardo Sanchez \nVersión: 21052019");
+    }//GEN-LAST:event_jMenu10MouseClicked
+
+    /**
+     * Ejecuta proceso para realizar una validación previa al lenguaje
+     * @param evt 
+     */
+    private void jMenu7MouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_jMenu7MouseClicked
+        compilar(true);
+    }//GEN-LAST:event_jMenu7MouseClicked
+
+    /**
      * Metodo encargado de suncronizar los pasos del compilador
+     *
      * @param n
      */
     public synchronized void sincroPasoAPaso(javax.swing.AbstractListModel n) {
         this.txtConsola.setText("");
-        for(int i = 0;i < n.getSize();i++){
-            this.txtConsola.setText(this.txtConsola.getText() + "\n" + (String)n.getElementAt(i));
+        for (int i = 0; i < n.getSize(); i++) {
+            this.txtConsola.setText(this.txtConsola.getText() + "\n" + (String) n.getElementAt(i));
         }
     }
-    
+
     /**
      * Sincroniza paso a paso con el compiladors
+     *
      * @param n
      */
     public synchronized void sincroErrores(javax.swing.AbstractListModel n) {
         this.txtErrores.setText("");
-        for(int i = 0;i < n.getSize();i++){
-            this.txtErrores.setText(this.txtErrores.getText() + "\n" + (String)n.getElementAt(i));
+        for (int i = 0; i < n.getSize(); i++) {
+            this.txtErrores.setText(this.txtErrores.getText() + "\n" + (String) n.getElementAt(i));
         }
     }
-    
+
     /**
      * Sincroniza opción de menu de compilador
+     *
      * @param n
      */
     public synchronized void habilitarCompilador(boolean n) {
         this.jMenu8.setEnabled(n);
     }
-    
+
     /**
      * Sincroniza opción de menu de compilador
+     *
      * @param n
      */
     public synchronized void habilitarConsola(boolean n) {
@@ -324,21 +376,21 @@ public class fmrCompilador extends javax.swing.JFrame {
 
     /**
      * Compilar
+     * @param xSoloValida
      */
-    public void analizar() {
-        
+    public void compilar(boolean  xSoloValida) {
         ///LIMPIAR
         this.txtErrores.setText("");
         this.txtConsola.setText("");
-        
+
         java.util.List<String> xDatosArchivo = new ArrayList<>();
         String[] xTexto = this.txtCodigoFuente.getText().split("\n");
         xDatosArchivo.addAll(Arrays.asList(xTexto));
         this.objCompilador = new compilador(this, this.xLineaConsola);
         this.objCapturaDatoConsola = new listaCapturaDato();
         this.objCompilador.setPasosCompilador(xDatosArchivo);
+        this.objCompilador.setSoloValidar(xSoloValida);
         this.objCompilador.start();
-        
     }
 
     /**
@@ -443,7 +495,6 @@ public class fmrCompilador extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu10;
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
-    private javax.swing.JMenu jMenu4;
     private javax.swing.JMenu jMenu5;
     private javax.swing.JMenu jMenu6;
     private javax.swing.JMenu jMenu7;

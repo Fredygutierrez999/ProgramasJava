@@ -99,13 +99,13 @@ public final class fmrCompilador extends javax.swing.JFrame {
         txtConsola = new javax.swing.JTextArea();
         jScrollPane3 = new javax.swing.JScrollPane();
         txtErrores = new javax.swing.JTextArea();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        tblDatos = new javax.swing.JTable();
         jMenuBar2 = new javax.swing.JMenuBar();
         jMenu3 = new javax.swing.JMenu();
         jMenu5 = new javax.swing.JMenu();
-        jMenu6 = new javax.swing.JMenu();
         jMenu7 = new javax.swing.JMenu();
         jMenu8 = new javax.swing.JMenu();
-        jMenu9 = new javax.swing.JMenu();
         jMenu10 = new javax.swing.JMenu();
 
         jMenu1.setText("File");
@@ -160,14 +160,24 @@ public final class fmrCompilador extends javax.swing.JFrame {
         txtErrores.setRows(5);
         jScrollPane3.setViewportView(txtErrores);
 
+        tblDatos.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+                {null, null, null},
+                {null, null, null},
+                {null, null, null},
+                {null, null, null}
+            },
+            new String [] {
+                "Token", "Línea", "Tipo"
+            }
+        ));
+        jScrollPane2.setViewportView(tblDatos);
+
         jMenu3.setLabel("Archivo");
         jMenuBar2.add(jMenu3);
 
         jMenu5.setLabel("Editar");
         jMenuBar2.add(jMenu5);
-
-        jMenu6.setText("Adelante");
-        jMenuBar2.add(jMenu6);
 
         jMenu7.setText("Validar");
         jMenu7.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -185,9 +195,6 @@ public final class fmrCompilador extends javax.swing.JFrame {
         });
         jMenuBar2.add(jMenu8);
 
-        jMenu9.setText("Ver BNF");
-        jMenuBar2.add(jMenu9);
-
         jMenu10.setText("Quienes somos");
         jMenu10.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -204,10 +211,11 @@ public final class fmrCompilador extends javax.swing.JFrame {
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 619, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(jLabel1)
-                    .addComponent(statusMsg2))
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING, false)
+                    .addComponent(jScrollPane2)
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 619, Short.MAX_VALUE)
+                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(statusMsg2, javax.swing.GroupLayout.Alignment.LEADING))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(layout.createSequentialGroup()
@@ -217,15 +225,15 @@ public final class fmrCompilador extends javax.swing.JFrame {
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(jButton1))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jLabel2)
-                            .addComponent(jLabel3))
+                        .addComponent(jLabel3)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addGroup(layout.createSequentialGroup()
-                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 428, Short.MAX_VALUE)
-                            .addComponent(jScrollPane3))
-                        .addContainerGap())))
+                        .addComponent(jLabel2)
+                        .addGap(355, 439, Short.MAX_VALUE))
+                    .addGroup(layout.createSequentialGroup()
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 477, Short.MAX_VALUE)
+                        .addContainerGap())
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.Alignment.TRAILING)))
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -235,19 +243,21 @@ public final class fmrCompilador extends javax.swing.JFrame {
                     .addComponent(jLabel1)
                     .addComponent(jLabel3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jScrollPane4, javax.swing.GroupLayout.DEFAULT_SIZE, 277, Short.MAX_VALUE)
+                        .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 307, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                             .addComponent(jLabel5)
                             .addComponent(txtDatoConsola, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                             .addComponent(jButton1))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel2)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jScrollPane3, javax.swing.GroupLayout.PREFERRED_SIZE, 177, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addComponent(jLabel2))
                     .addComponent(jScrollPane1))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 158, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(statusMsg2)
                 .addContainerGap())
@@ -342,6 +352,38 @@ public final class fmrCompilador extends javax.swing.JFrame {
             this.txtErrores.setText(this.txtErrores.getText() + "\n" + (String) n.getElementAt(i));
         }
     }
+    
+    /**
+     * Elimina filas de JTable para reiniciar los simbolos
+     * @param tabla 
+     */
+    public void limpiarTabla(javax.swing.JTable tabla){
+        try {
+            javax.swing.table.DefaultTableModel modelo=(javax.swing.table.DefaultTableModel) tabla.getModel();
+            int filas=tabla.getRowCount();
+            for (int i = 0;filas>i; i++) {
+                modelo.removeRow(0);
+            }
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(null, "Error al limpiar la tabla.");
+        }
+    }
+    
+    /**
+     * Sincroniza simbolos
+     *
+     * @param n
+     */
+    public synchronized void sincroSimbolos(ArrayList<compilador.itemSimbolos> n) {
+        javax.swing.table.DefaultTableModel modelo = (javax.swing.table.DefaultTableModel)this.tblDatos.getModel();
+        for (int i = 0; i < n.size(); i++) {
+            Object []object = new Object[3];
+            object[0] = n.get(i).get_Linea();
+            object[1] = n.get(i).get_Token();
+            object[2] = n.get(i).get_Tipo().toString();
+            modelo.addRow(object);    
+        }
+    }
 
     /**
      * Sincroniza opción de menu de compilador
@@ -380,6 +422,7 @@ public final class fmrCompilador extends javax.swing.JFrame {
      */
     public void compilar(boolean  xSoloValida) {
         ///LIMPIAR
+        limpiarTabla(this.tblDatos);
         this.txtErrores.setText("");
         this.txtConsola.setText("");
 
@@ -496,16 +539,16 @@ public final class fmrCompilador extends javax.swing.JFrame {
     private javax.swing.JMenu jMenu2;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenu jMenu5;
-    private javax.swing.JMenu jMenu6;
     private javax.swing.JMenu jMenu7;
     private javax.swing.JMenu jMenu8;
-    private javax.swing.JMenu jMenu9;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuBar jMenuBar2;
     private javax.swing.JScrollPane jScrollPane1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
     private javax.swing.JScrollPane jScrollPane4;
     private javax.swing.JLabel statusMsg2;
+    private javax.swing.JTable tblDatos;
     private javax.swing.JTextArea txtCodigoFuente;
     private javax.swing.JTextArea txtConsola;
     private javax.swing.JTextField txtDatoConsola;

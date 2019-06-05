@@ -438,6 +438,72 @@ public class compilador extends Thread {
         }
     }
 
+    /**
+     * Enumeradores para el tipo de simbolo
+     */
+    public enum tipoSimbolo {
+
+        RESERVADA, IDENTIFICADOR, OPERADOR_RELACIONAL, VACIO, OPERADOR, CONDICIONAL, INICIALIZADOR
+    }
+
+    /**
+     * Clase utilizada para registrar simblos del lenguaje
+     *
+     */
+    public class itemSimbolos {
+
+        private String _token;
+        private int _linea;
+        private tipoSimbolo _tipo;
+
+        /**
+         * Constructor
+         *
+         */
+        public void getToken() {
+            this._token = "";
+            this._linea = 0;
+            this._tipo = tipoSimbolo.VACIO;
+        }
+
+        public String get_Token() {
+            return this._token;
+        }
+
+        public int get_Linea() {
+            return this._linea;
+        }
+
+        public void set_Tipo(tipoSimbolo xTipo) {
+            this._tipo = xTipo;
+        }
+
+        public void set_Token(String xToken) {
+            this._token = xToken;
+        }
+
+        public void set_Linea(int xLinea) {
+            this._linea = xLinea;
+        }
+
+        public tipoSimbolo get_Tipo() {
+            return this._tipo;
+        }
+
+        /**
+         * Sobre carga de constructor
+         *
+         * @param xLinea
+         * @param xToken
+         * @param xTipo
+         */
+        public void getToken(int xLinea, String xToken, tipoSimbolo xTipo) {
+            this._token = xToken;
+            this._linea = xLinea;
+            this._tipo = xTipo;
+        }
+    }
+
     private final String _ConstOperadores = ",+,-,*,/,^,&&,||,<<,>>,<=,==,<>,>=,(,),";
     private final String _ConstLetras = "abcdefghijklmnñopqrstuvwxyz";
     private final String _ConstNumeros = "1234567890";
@@ -453,6 +519,7 @@ public class compilador extends Thread {
     private listaCapturaDato _CapturaDatos;
     private listaCapturaDato xLineaConsola;
     private boolean _soloValida;
+    private List<itemSimbolos> _Simbolos;
 
     /**
      * Marca la bandera solo valida para que el compilador muestre los errores
@@ -496,6 +563,7 @@ public class compilador extends Thread {
         this._DiccionarioVariables = new Hashtable<>();
         this._ListPasosCompilado = new ArrayList<>();
         this._DiccionarioTiposDatos = new Hashtable<>();
+        this._Simbolos = new ArrayList<>();
 
         /**
          * Carga tipos de datos
@@ -507,6 +575,17 @@ public class compilador extends Thread {
         this._DiccionarioTiposDatos.put("logico", "logico");
         this._ModelLogConsola = new modeloListados();
         this._ModelLogErrores = new modeloListados();
+    }
+
+    /**
+     * Agrega simbolo en la lista
+     */
+    private void agregarSimbolo(int xLinea, String xToken, tipoSimbolo xTipo) {
+        itemSimbolos objItem = this.new itemSimbolos();
+        objItem.set_Linea(xLinea);
+        objItem.set_Token(xToken);
+        objItem.set_Tipo(xTipo);
+        this._Simbolos.add(objItem);
     }
 
     /**
@@ -811,9 +890,11 @@ public class compilador extends Thread {
         respuestaProceso objProceso = new respuestaProceso();
         for (int i = 0; i < this._ListPasosCompilado.size(); i++) {
             pasos objPaso = this._ListPasosCompilado.get(i);
+            agregarSimbolo(i, objPaso.primerPalabraReservada(), tipoSimbolo.RESERVADA);
             switch (objPaso.primerPalabraReservada()) {
                 case "programa":
                     AgregarConsolaLn("**************************Inicia programa: " + objPaso.getNombres().get(0) + "**************************");
+                    agregarSimbolo(i, objPaso.getNombres().get(0), tipoSimbolo.IDENTIFICADOR);
                     break;
                 case "var":
                     for (String nombre : objPaso.getNombres()) {
@@ -821,6 +902,7 @@ public class compilador extends Thread {
                         objVariable.setNombre(nombre);
                         objVariable.setTipoDato(objPaso.segundaPalabraReservada());
                         this._DiccionarioVariables.put(nombre, objVariable);
+                        agregarSimbolo(i, nombre, tipoSimbolo.IDENTIFICADOR);
                     }
                     break;
                 case "escribir":
@@ -831,6 +913,8 @@ public class compilador extends Thread {
                         } else {
                             xCadena += this._DiccionarioVariables.get(nombre).getValor().toString();
                         }
+                        agregarSimbolo(i, ",", tipoSimbolo.OPERADOR);
+                        agregarSimbolo(i, nombre, tipoSimbolo.IDENTIFICADOR);
                     }
                     AgregarConsola(xCadena);
                     break;
@@ -842,6 +926,8 @@ public class compilador extends Thread {
                         } else {
                             xCadenaln += this._DiccionarioVariables.get(nombre).getValor().toString();
                         }
+                        agregarSimbolo(i, ",", tipoSimbolo.OPERADOR);
+                        agregarSimbolo(i, nombre, tipoSimbolo.IDENTIFICADOR);
                     }
                     AgregarConsolaLn(xCadenaln);
                     break;
@@ -851,6 +937,7 @@ public class compilador extends Thread {
                         this._hiloPrincipal.habilitarConsola(true);
                         xValor = xLineaConsola.getDato();
                         this._hiloPrincipal.habilitarConsola(false);
+                        agregarSimbolo(i, objPaso.primerNombre(), tipoSimbolo.IDENTIFICADOR);
                         variable objTemporal = this._DiccionarioVariables.get(objPaso.primerNombre());
                         if (objTemporal != null) {
                             if (esNumero(objTemporal) || esDecimal(objTemporal)) {
@@ -879,12 +966,22 @@ public class compilador extends Thread {
                         variable objVariable = this._DiccionarioVariables.get(objPaso.primerNombre());
                         objVariable.setValor(Integer.toString(objPaso.getIterado() - 1));
                         objPaso.setIniciado(true);
+
+                        agregarSimbolo(i, objPaso.primerNombre(), tipoSimbolo.INICIALIZADOR);
+                        agregarSimbolo(i, objPaso.getEspecialComparacion(), tipoSimbolo.CONDICIONAL);
+                        agregarSimbolo(i, Integer.toString(objPaso.getIterado()), tipoSimbolo.OPERADOR);
+
                     }
 
+                    variable objVariable = this._DiccionarioVariables.get(objPaso.primerNombre());
+                    Object xValorTemporal = objVariable.getValor();
+                    objVariable.setValor(Integer.toString(Integer.parseInt((String) objVariable.getValor()) + objPaso.getIncremento()));
+                    
                     variable objResultadoWhile = evaluarExpresion(objPaso.getEspecialComparacion());
                     if (esBoolean(objResultadoWhile)) {
-                        variable objVariable = this._DiccionarioVariables.get(objPaso.primerNombre());
+                        objVariable = this._DiccionarioVariables.get(objPaso.primerNombre());
                         if (objResultadoWhile.getValor() == "verdadero") {
+                            objVariable.setValor(xValorTemporal);
                             objVariable.setValor(Integer.toString(Integer.parseInt((String) objVariable.getValor()) + objPaso.getIncremento()));
                         } else {
                             objPaso.setIniciado(false);
@@ -899,6 +996,7 @@ public class compilador extends Thread {
                     break;
                 case "si":
                     String xComparacion = objPaso.primerNombre();
+                    agregarSimbolo(i, xComparacion, tipoSimbolo.CONDICIONAL);
                     variable objResultado = evaluarExpresion(xComparacion);
                     if (esBoolean(objResultado)) {
                         if (objResultado.getValor() != "verdadero") {
@@ -917,6 +1015,11 @@ public class compilador extends Thread {
                     String[] xPartesAsignacio = objPaso.primerNombre().split("=");
                     variable _VariableDestino = this._DiccionarioVariables.get(xPartesAsignacio[0].trim());
                     variable _objResultado = evaluarExpresion(xPartesAsignacio[1].trim());
+
+                    agregarSimbolo(i, xPartesAsignacio[0], tipoSimbolo.IDENTIFICADOR);
+                    agregarSimbolo(i, "=", tipoSimbolo.OPERADOR);
+                    agregarSimbolo(i, xPartesAsignacio[1], tipoSimbolo.OPERADOR_RELACIONAL);
+
                     if (_VariableDestino.getTipoDato().equals(_objResultado.getTipoDato())) {
                         _VariableDestino.setValor(_objResultado.getValor());
                     } else {
@@ -935,6 +1038,7 @@ public class compilador extends Thread {
                     break;
             }
         }
+        this._hiloPrincipal.sincroSimbolos((ArrayList<itemSimbolos>) this._Simbolos);
         return objProceso;
     }
 
@@ -1251,9 +1355,9 @@ public class compilador extends Thread {
                                 objRespuesta.setValor(Long.toString(_Resultado));
                                 break;
                             case "/":
-                                _Resultado = Long.parseLong((String) objIzquierda.getValor()) / Long.parseLong((String) objDerecha.getValor());
-                                objRespuesta.setTipoDato("entero");
-                                objRespuesta.setValor(Long.toString(_Resultado));
+                                double _ResultadoDec = Double.parseDouble((String) objIzquierda.getValor()) / Double.parseDouble((String) objDerecha.getValor());
+                                objRespuesta.setTipoDato("real");
+                                objRespuesta.setValor(Double.toString(_ResultadoDec));
                                 break;
                             case "*":
                                 _Resultado = Long.parseLong((String) objIzquierda.getValor()) * Long.parseLong((String) objDerecha.getValor());
@@ -1353,6 +1457,9 @@ public class compilador extends Thread {
         objProceso = cargarLinearACompilar(this._ListPasosCompilador);
         if (objProceso.getresultado() && this._ModelLogErrores.getSize() == 0) {
             if (!this._soloValida) {
+                AgregarConsola("**************************ANALISIS SINTACTICO**************************");
+                AgregarConsola("**************************ANALISIS COMPLETADO**************************");
+                AgregarConsola("**************************ANALISIS SEMANTICO**************************");
                 compilar();
             }
         }
